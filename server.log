@@ -1,13 +1,8 @@
-[19:01:13] alt:V Server, build #1181, branch release
-[19:01:13] Starting alt:V Server on 127.0.0.1:7788
-[19:01:15] Loading resource chat
-[19:01:15] Loaded resource chat
-[19:01:15] Loading resource freeroam
-[19:01:15] Loaded resource freeroam
-[19:01:15] Starting HTTP server on 127.0.0.1:7788
-[19:01:15] Server started
-[19:09:16] Stopping resource chat
-[19:09:16] Stopped resource chat
-[19:09:16] Stopping resource freeroam
-[19:09:16] Stopped resource freeroam
-[19:09:17] Server shutdown
+[22:33:24] alt:V Server, build #1181, branch release
+[22:33:24] Starting Spawn House on 169.254.31.194:7788
+[22:33:24] Loading resource zombie
+[22:33:24] Loading resource chat
+[22:33:24] Loaded resource chat
+[22:33:24] Loaded resource zombie
+[22:33:24] Starting HTTP server on 169.254.31.194:7788
+[22:33:24] Server started
