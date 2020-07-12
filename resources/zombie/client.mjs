@@ -33,9 +33,9 @@ const walkStyles = [
 	"move_lester_CaneUp",
 ];
 
-const maxZombies = 1;
-const maxSpawnRadius = 2;
-const minSpawnRadius = 2;
+const maxZombies = 50;
+const maxSpawnRadius = 200;
+const minSpawnRadius = 35;
 const despawnRadius = 250;
 
 let infected = false;
