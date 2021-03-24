@@ -52,6 +52,10 @@ let peds = [];
 
 let deadPeds = [];
 
+let randomCredits = 0;
+let zCredits = 0;
+let experience = 0;
+
 
 game.addRelationshipGroup("zombeez");
 game.setRelationshipBetweenGroups(5, game.getHashKey("zombeez"), game.getHashKey("PLAYER"));
@@ -59,7 +63,7 @@ game.setRelationshipBetweenGroups(5, game.getHashKey("zombeez"), game.getHashKey
 game.setRelationshipBetweenGroups(5, game.getHashKey("PLAYER"), game.getHashKey("zombeez"));
 
 alt.setInterval(() => {
-    alt.log(peds.length);
+    //alt.log(peds.length);
     if(peds.length < maxZombies) {
         let playerPos = game.getEntityCoords(game.getPlayerPed(-1), true);
 
@@ -95,8 +99,8 @@ alt.setInterval(() => {
         // } while(canSpawn);
             
         let ped = game.createPed(4, game.getHashKey(choosenPed), newX, newY, newZ, 0.0, false, true);
-        alt.log('Your Pos ' + playerPos.x + ' ' + playerPos.y + ' ' + playerPos.z);
-        alt.log('Zombie spawned at ' + newX + ' ' + newY + ' ' + newZ);
+        //alt.log('Your Pos ' + playerPos.x + ' ' + playerPos.y + ' ' + playerPos.z);
+        //alt.log('Zombie spawned at ' + newX + ' ' + newY + ' ' + newZ);
 
         game.setPedArmour(ped, 100);
         game.setPedAccuracy(ped, 25);
@@ -210,123 +214,135 @@ alt.setInterval(() => {
     });
 }, 60000);
 
-// alt.setInterval(() => {
-//     peds.forEach((ped, index) => {
-//         //Gets the player infected when a zombie attacks them
-//         playerX, playerY, playerZ = table.unpack(GetEntityCoords(GetPlayerPed(-1), true))
-//         pedX, pedY, pedZ = table.unpack(GetEntityCoords(ped, true))
-//         infection = DecorGetFloat(PlayerPedId(),"infection")
-//         if(Vdist(pedX, pedY, pedZ, playerX, playerY, playerZ) < 2.0)then
-//             if IsPedInMeleeCombat(ped) then
-//                 if HasEntityBeenDamagedByEntity(PlayerPedId(), ped, 1) then
-//                     Citizen.Trace("Player has been hit by zombie.")
-//                     hitCount = hitCount + 1
-//                     hasBeenHit = true
-//                 end
-//             end
-//         end
+alt.setInterval(() => {
+            //Gets the player infected when a zombie attacks them
+            let playerPos = game.getEntityCoords(game.getPlayerPed(-1), true);
             
-//         if hitCount > 2 then
-//             infected = true
-//         end
+            let infection = game.decorGetFloat(game.playerPedId(),"infection");
+    peds.forEach((ped, index) => {
+        let pedPos = game.getEntityCoords(ped, true);
+        if (game.vdist(pedPos.x, pedPos.y, pedPos.z, playerPos.x, playerPos.y, playerPos.z) < 2.0) {
+            if (game.isPedInMeleeCombat(ped)) {
+                if(game.hasEntityBeenDamagedByEntity(game.playerPedId(), ped, 1)) {
+                    alt.log('player hit by zombie');
+                    hitCount = hitCount + 1;
+                    hasBeenHit = true;
+                }
+            }
+        }
             
-//         if infected == false then
-//             DecorSetFloat(PlayerPedId(),"infection", 0)
-//         end
+        if (hitCount > 2) {
+            infected = true;
+        }
             
-//         if infected == true then
-//             DecorSetFloat(PlayerPedId(),"infection", infection + 1)
-//             Citizen.Wait(15000)
-//         end
-        
-//         -- Finish guard missions Zombie killing
-//         if zombieCount > 9 then
-//             killedZombies = true
-//             guardMission = false
-//             ShowNotification("Return to the guard.")
-//         end
+        // if(infected == false) {
+        //     game.decorSetFloat(game.playerPedId(),"infection", 0);
+        // }
             
-//         -- Return collected fingers to Jason
-//         if fingerCount > 4 then
-//             hasFingers = true
-//             jasonMission = false
-//             ShowNotification("You have all the fingers Jason wants, return them to him.")
-//         end
+        // if(infected == true) {
+        //     game.decorSetFloat(game.playerPedId(),"infection", infection + 1);
+        //     //Citizen.Wait(15000);
+        // }
         
-//         -- Increase Zombie Count for Guard Mission
-//         if guardMission == true then
-//             if IsPedDeadOrDying(ped, 1) == 1 then
-//                 if GetPedSourceOfDeath(ped) == PlayerPedId() then
-//                     zombieCount = zombieCount + 1
-//                     local model = GetEntityModel(ped)
-//                     SetEntityAsNoLongerNeeded(ped)
-//                     SetModelAsNoLongerNeeded(model)
-//                     table.remove(peds, i)
-//                     zombieCountAdd = true
-//                 end
-//             end
-//         end
+        //Finish guard missions Zombie killing
+        // if zombieCount > 9 then
+        //     killedZombies = true
+        //     guardMission = false
+        //     ShowNotification("Return to the guard.")
+        // end
+            
+        //Return collected fingers to Jason
+        // if fingerCount > 4 then
+        //     hasFingers = true
+        //     jasonMission = false
+        //     ShowNotification("You have all the fingers Jason wants, return them to him.")
+        // end
         
-//         if IsPedDeadOrDying(ped, 1) == 1 then
-//             playerX, playerY, playerZ = table.unpack(GetEntityCoords(GetPlayerPed(-1), true))
-//             pedX, pedY, pedZ = table.unpack(GetEntityCoords(ped, true))	
-//             if not IsPedInAnyVehicle(PlayerPedId(), false) then
-//                 if(Vdist(playerX, playerY, playerZ, pedX, pedY, pedZ) < 3.0)then
-//                     DisplayHelpText("Press ~INPUT_CONTEXT~ to loot zombie.")
-//                     if IsControlJustReleased(1, 51) then -- E key
-//                         if DoesEntityExist(GetPlayerPed(-1)) then
-//                             RequestAnimDict("pickup_object")
-//                             while not HasAnimDictLoaded("pickup_object") do
-//                             Citizen.Wait(1)
-//                             end
-//                             TaskPlayAnim(PlayerPedId(), "pickup_object", "pickup_low", 8.0, -8, -1, 49, 0, 0, 0, 0)
-//                             experience = DecorGetFloat(PlayerPedId(), "experience")
-                            
-//                             if jasonMission == true then
-//                                 fingerCount = fingerCount + 1
-//                                 Citizen.Trace("Finger collected")
-//                             end
-                                
-//                             randomChance = math.random(1, 100)
-//                             randomLoot = loot[math.random(1, #loot)]
-//                             DecorSetFloat(PlayerPedId(), "experience", experience + 10)
-//                             Citizen.Wait(2000)
-//                             if randomChance > 0 and randomChance < 20 then
-//                                 GiveWeaponToPed(PlayerPedId(), randomLoot, 8, true, false)
-//                                 ShowNotification("You found " .. randomLoot)
-//                             elseif randomChance >= 20 and randomChance < 40 then
-//                                 randomCredits = math.random(2, 15)
-//                                 zCredits = zCredits + randomCredits
-//                                 ShowNotification("You found " .. randomCredits.. " Zombie Credits")
-//                             elseif randomChance >= 40 and randomChance < 60 then
-//                                 zBlood = zBlood + 1
-//                                 ShowNotification("You found Zombie blood")
-//                             elseif randomChance >= 60 and randomChance < 80 then
-//                                 randomLogs = math.random(1, 5)
-//                                 woodLogs = woodLogs + randomLogs
-//                                 ShowNotification("You found " ..randomLogs.. " wood logs")
-//                             elseif randomChance >= 80 and randomChance < 100 then
-//                                 ShowNotification("You found nothing.")
-//                             end
-//                             ClearPedSecondaryTask(GetPlayerPed(-1))
-//                             --RemoveBlip(blip)
-//                             local model = GetEntityModel(ped)
-//                             SetEntityAsNoLongerNeeded(ped)
-//                             SetModelAsNoLongerNeeded(model)
-//                             --DeleteEntity(ped)
-//                             table.remove(peds, i)
-//                         end
-//                     end
-//                 end
-//             end
-//         end
+        //Increase Zombie Count for Guard Mission
+        // if guardMission == true then
+        //     if IsPedDeadOrDying(ped, 1) == 1 then
+        //         if GetPedSourceOfDeath(ped) == PlayerPedId() then
+        //             zombieCount = zombieCount + 1
+        //             local model = GetEntityModel(ped)
+        //             SetEntityAsNoLongerNeeded(ped)
+        //             SetModelAsNoLongerNeeded(model)
+        //             table.remove(peds, i)
+        //             zombieCountAdd = true
+        //         end
+        //     end
+        //end
+    
         
-//         -- Makes zombies ragdoll in vehicle
-//         if IsPedSittingInAnyVehicle(GetPlayerPed(-1)) then
-//             SetPedCanRagdoll(ped, true)
-//         elseif not IsPedSittingInAnyVehicle(GetPlayerPed(-1)) then
-//             SetPedCanRagdoll(ped, false)
-//         end
-//     })
+        // -- Makes zombies ragdoll in vehicle
+        // if IsPedSittingInAnyVehicle(GetPlayerPed(-1)) then
+        //     SetPedCanRagdoll(ped, true)
+        // elseif not IsPedSittingInAnyVehicle(GetPlayerPed(-1)) then
+        //     SetPedCanRagdoll(ped, false)
+        // end
+    });
 
-// });
+    deadPeds.forEach((ped, index)=> {
+        alt.log('dead ped init');
+        if (game.isPedDeadOrDying(ped, 1) == 1) {
+            if (!game.isPedInAnyVehicle(game.playerPedId(), false)) {
+                let pedPos = game.getEntityCoords(ped, true);
+                alt.log('inside loot');
+                if(game.vdist(playerPos.x, playerPos.y, playerPos.z, pedPos.x, pedPos.y, pedPos.z) < 3.0) {
+                    alt.log('can loot');
+                    game.displayHelpTextThisFrame("Press E to loot zombie.", true);
+                    if(game.isControlJustReleased(1, 51)) { //-- E key
+                        if (game.doesEntityExist(game.getPlayerPed(-1))) {
+                            game.requestAnimDict("pickup_object");
+                            // while not HasAnimDictLoaded("pickup_object") do
+                            // Citizen.Wait(1)
+                            // end
+                            game.taskPlayAnim(game.playerPedId(), "pickup_object", "pickup_low", 8.0, -8, -1, 49, 0, 0, 0, 0);
+                            //experience = game.decorGetFloat(game.playerPedId(), "experience");
+                            
+                            // if jasonMission == true then
+                            //     fingerCount = fingerCount + 1
+                            //     Citizen.Trace("Finger collected")
+                            // end
+                                
+                            let randomChance = Math.floor(Math.random() * 100) + 1;
+                            let randomLoot = loot[Math.floor(Math.random() * pedModels.length)]
+                            //game.decorSetFloat(game.playerPedId(), "experience", experience + 10)
+                            //Citizen.Wait(2000)
+                            alt.log('randomChance');
+                            if(randomChance > 0 && randomChance < 20) {
+                                game.giveWeaponToPed(game.playerPedId(), randomLoot, 8, true, false)
+                                game.showNotification("You found " + randomLoot);
+                                alt.log("You found " + randomLoot);
+                            }
+                            else if(randomChance >= 20 && randomChance < 40) {
+                                randomCredits = Math.floor(Math.random() * 15) + 2;
+                                zCredits = zCredits + randomCredits;
+                                game.showNotification("You found " + randomCredits + " Zombie Credits");
+                            }
+                            // else if (randomChance >= 40 && randomChance < 60) {
+                            //     zBlood = zBlood + 1
+                            //     ShowNotification("You found Zombie blood")
+                            // }
+                            // elseif randomChance >= 60 and randomChance < 80 then
+                            //     randomLogs = math.random(1, 5)
+                            //     woodLogs = woodLogs + randomLogs
+                            //     ShowNotification("You found " ..randomLogs.. " wood logs")
+                            else if(randomChance >= 40 && randomChance < 100) {
+                                alt.log("You found nothing.");
+                                game.showNotification("You found nothing.");
+                            }
+                            game.clearPedSecondaryTask(game.getPlayerPed(-1));
+                            //RemoveBlip(blip)
+                            let model = game.getEntityModel(ped);
+                            game.setEntityAsNoLongerNeeded(ped);
+                            game.setModelAsNoLongerNeeded(model);
+                            //DeleteEntity(ped)
+                            table.remove(peds, i)
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+},500);
